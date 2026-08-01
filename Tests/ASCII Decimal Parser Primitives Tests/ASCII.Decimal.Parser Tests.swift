@@ -8,6 +8,8 @@ import Testing
 // vends `Element == Byte`, which the parser requires. Inputs are built with the
 // `Byte.Input.bytes(_:)` factory from the Test Support module (an array-literal
 // conformance is impossible — see `Byte.Input+Bytes.swift`).
+// swift-linter:disable:next unification typealias
+// REASON: private, file-scoped readability alias for test input construction; no consumer-observable surface.
 private typealias Cursor = Byte.Input
 
 // MARK: - Test Suite Structure
@@ -18,6 +20,7 @@ struct `ASCII.Decimal.Parser Tests` {
     @Suite struct `Edge Case` {}
     @Suite struct `Count Policy` {}
     @Suite struct `Sign Policy` {}
+    @Suite struct Integration {}
 }
 
 // MARK: - Unit Tests

@@ -59,6 +59,8 @@ extension ASCII.Decimal.Float.Parser: Parser.`Protocol` {
     public typealias Output = Double
     /// The error thrown when parsing fails.
     public typealias Failure = ASCII.Decimal.Float.Error
+    /// This leaf conformer has no delegating `body`.
+    public typealias Body = Never
 
     /// Parses a floating-point value from `input`, consuming the bytes it reads.
     @inlinable
@@ -328,7 +330,7 @@ extension ASCII.Decimal.Float {
             // UInt8) is the legitimate conversion site.
             var bytes: [UInt8] = []
             bytes.reserveCapacity(i)
-            for j in 0..<i { bytes.append(span[j].underlying) }
+            (0..<i).forEach { j in bytes.append(span[j].underlying) }
             let str = Swift.String(decoding: bytes, as: Swift.UTF8.self)
             guard let v = Double(str), v.isFinite else { throw .overflow }
             return v

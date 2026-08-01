@@ -19,24 +19,6 @@ extension ASCII.Decimal {
     public enum Machine {}
 }
 
-extension ASCII.Decimal.Machine {
-    /// Accumulator type for folding decimal digits.
-    ///
-    /// Tracks both the multiplier (power of 10) and running sum to enable
-    /// combining with the required first digit.
-    @usableFromInline
-    struct FoldState<T: FixedWidthInteger & Sendable>: Sendable {
-        @usableFromInline var multiplier: T
-        @usableFromInline var sum: T
-
-        @inlinable
-        package init(multiplier: T, sum: T) {
-            self.multiplier = multiplier
-            self.sum = sum
-        }
-    }
-}
-
 // MARK: - Unsigned Decimal Parsers
 
 extension ASCII.Decimal.Machine {
@@ -58,12 +40,10 @@ extension ASCII.Decimal.Machine {
     public static func unsigned<T: UnsignedInteger & FixedWidthInteger & Sendable>(
         _ type: T.Type = T.self
     ) -> Binary.Machine.Parser<T> {
-        typealias M = Binary.Machine
-
-        return M.build { builder -> M.Expression<T> in
+        return Binary.Machine.build { builder -> Binary.Machine.Expression<T> in
             // Parse a single ASCII digit, convert to numeric value
-            let digit = M.take1(in: &builder).tryMap(
-                { byte throws(M.Fault) -> T in
+            let digit = Binary.Machine.take1(in: &builder).tryMap(
+                { byte throws(Binary.Machine.Fault) -> T in
                     guard byte >= 0x30 && byte <= 0x39 else {
                         throw .predicateFailed(byte: byte)
                     }
@@ -73,11 +53,11 @@ extension ASCII.Decimal.Machine {
             )
 
             // Fold additional digits, tracking multiplier for final combination
-            let moreDigits = M.fold(
+            let moreDigits = Binary.Machine.fold(
                 digit,
-                initial: FoldState<T>(multiplier: 1, sum: 0),
+                initial: Fold<T>(multiplier: 1, sum: 0),
                 combine: { state, d in
-                    FoldState(
+                    Fold(
                         multiplier: state.multiplier &* 10,
                         sum: state.sum &* 10 &+ d
                     )
@@ -86,7 +66,7 @@ extension ASCII.Decimal.Machine {
             )
 
             // Combine: first digit * multiplier + accumulated sum
-            return M.sequence(
+            return Binary.Machine.sequence(
                 digit,
                 moreDigits,
                 combine: { first, state in
@@ -120,19 +100,17 @@ extension ASCII.Decimal.Machine {
     public static func signed<T: SignedInteger & FixedWidthInteger & Sendable>(
         _ type: T.Type = T.self
     ) -> Binary.Machine.Parser<T> {
-        typealias M = Binary.Machine
-
-        return M.build { builder -> M.Expression<T> in
+        return Binary.Machine.build { builder -> Binary.Machine.Expression<T> in
             // Parse optional sign: -1 for '-', +1 for '+' or no sign
-            let minusSign = M.byte(0x2D, in: &builder).map({ _ in T(-1) }, in: &builder)  // '-'
-            let plusSign = M.byte(0x2B, in: &builder).map({ _ in T(1) }, in: &builder)  // '+'
-            let noSign = M.pure(T(1), in: &builder)
+            let minusSign = Binary.Machine.byte(0x2D, in: &builder).map({ _ in T(-1) }, in: &builder)  // '-'
+            let plusSign = Binary.Machine.byte(0x2B, in: &builder).map({ _ in T(1) }, in: &builder)  // '+'
+            let noSign = Binary.Machine.pure(T(1), in: &builder)
 
-            let sign = M.oneOf([minusSign, plusSign, noSign], in: &builder)
+            let sign = Binary.Machine.oneOf([minusSign, plusSign, noSign], in: &builder)
 
             // Parse a single ASCII digit, convert to numeric value
-            let digit = M.take1(in: &builder).tryMap(
-                { byte throws(M.Fault) -> T in
+            let digit = Binary.Machine.take1(in: &builder).tryMap(
+                { byte throws(Binary.Machine.Fault) -> T in
                     guard byte >= 0x30 && byte <= 0x39 else {
                         throw .predicateFailed(byte: byte)
                     }
@@ -142,11 +120,11 @@ extension ASCII.Decimal.Machine {
             )
 
             // Fold additional digits, tracking multiplier for final combination
-            let moreDigits = M.fold(
+            let moreDigits = Binary.Machine.fold(
                 digit,
-                initial: FoldState<T>(multiplier: 1, sum: 0),
+                initial: Fold<T>(multiplier: 1, sum: 0),
                 combine: { state, d in
-                    FoldState(
+                    Fold(
                         multiplier: state.multiplier &* 10,
                         sum: state.sum &* 10 &+ d
                     )
@@ -155,7 +133,7 @@ extension ASCII.Decimal.Machine {
             )
 
             // Combine first digit with accumulated rest
-            let magnitude = M.sequence(
+            let magnitude = Binary.Machine.sequence(
                 digit,
                 moreDigits,
                 combine: { first, state in
@@ -165,7 +143,7 @@ extension ASCII.Decimal.Machine {
             )
 
             // Apply sign
-            return M.sequence(sign, magnitude, combine: { s, m in s &* m }, in: &builder)
+            return Binary.Machine.sequence(sign, magnitude, combine: { s, m in s &* m }, in: &builder)
         }
     }
 }

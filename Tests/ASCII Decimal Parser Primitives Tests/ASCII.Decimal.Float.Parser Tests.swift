@@ -21,7 +21,7 @@ private func bytes(_ s: String) -> Cursor {
     Cursor(utf8: s)
 }
 
-private func parse(_ s: String) throws -> Double {
+private func parse(_ s: String) throws(ASCII.Decimal.Float.Error) -> Double {
     let parser = ASCII.Decimal.Float.Parser<Cursor>()
     var input = bytes(s)
     return try parser.parse(&input)

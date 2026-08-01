@@ -30,12 +30,15 @@ private typealias Cursor = Input_Primitives.Input.Slice<Parser.Test.Bytes>
 
 // MARK: - Test Suite
 
-@Suite("Declarative Parser Syntax — var body convention")
-struct DeclarativeParserSyntaxTests {
-    @Suite("Network.Endpoint") struct EndpointTests {}
-    @Suite("Geometry.Point") struct PointTests {}
-    @Suite("Measurement.Range") struct RangeTests {}
-    @Suite("Composition") struct CompositionTests {}
+@Suite
+struct `Declarative Parser Syntax Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+    @Suite struct `Endpoint Tests` {}
+    @Suite struct `Point Tests` {}
+    @Suite struct `Range Tests` {}
+    @Suite struct `Composition Tests` {}
 }
 
 // ════════════════════════════════════════════════════════════
@@ -293,7 +296,7 @@ extension Weighted.Endpoint.Parser: Parser.`Protocol` {
 
 // MARK: - Network.Endpoint Tests
 
-extension DeclarativeParserSyntaxTests.EndpointTests {
+extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
     @Test
     func `parses host:port`() throws {
         let parser = Network.Endpoint.Parser<Cursor>()
@@ -359,7 +362,7 @@ extension DeclarativeParserSyntaxTests.EndpointTests {
 
 // MARK: - Geometry.Point Tests
 
-extension DeclarativeParserSyntaxTests.PointTests {
+extension `Declarative Parser Syntax Tests`.`Point Tests` {
     @Test
     func `parses x,y,z`() throws {
         let parser = Geometry.Point.Parser<Cursor>()
@@ -424,7 +427,7 @@ extension DeclarativeParserSyntaxTests.PointTests {
 
 // MARK: - Measurement.Range Tests
 
-extension DeclarativeParserSyntaxTests.RangeTests {
+extension `Declarative Parser Syntax Tests`.`Range Tests` {
     @Test
     func `parses lower-upper`() throws {
         let parser = Measurement.Range.Parser<Cursor>()
@@ -480,7 +483,7 @@ extension DeclarativeParserSyntaxTests.RangeTests {
 
 // MARK: - Composition Tests
 
-extension DeclarativeParserSyntaxTests.CompositionTests {
+extension `Declarative Parser Syntax Tests`.`Composition Tests` {
     @Test
     func `nested parser composes`() throws {
         let parser = Weighted.Endpoint.Parser<Cursor>()

@@ -51,6 +51,8 @@ extension ASCII.Decimal.Parser: Parser.`Protocol` {
     public typealias Output = T
     /// The error thrown when parsing fails.
     public typealias Failure = ASCII.Decimal.Error
+    /// This leaf conformer has no delegating `body`.
+    public typealias Body = Never
 
     /// Parses an integer value from `input`, consuming the digits it reads.
     @inlinable

@@ -1,8 +1,12 @@
 import ASCII_Parser_Primitives_Standard_Library_Integration
 import Testing
 
-@Suite("Parseable Integer Conformances")
-struct ParseableIntegerTests {
+@Suite
+struct `Parseable Integer Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+
     @Test
     func `Int parses via Parseable`() throws {
         let value = try Int(ascii: "42".utf8.map(Byte.init))
