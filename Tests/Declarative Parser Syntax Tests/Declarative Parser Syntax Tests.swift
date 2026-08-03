@@ -122,7 +122,6 @@ extension Measurement.Range {
 extension Network.Endpoint {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
-        init() {}
     }
 }
 
@@ -163,7 +162,6 @@ extension Network.Endpoint.Parser: Parser.`Protocol` {
 extension Geometry.Point {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
-        init() {}
     }
 }
 
@@ -210,7 +208,6 @@ extension Geometry.Point.Parser: Parser.`Protocol` {
 extension Measurement.Range {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
-        init() {}
     }
 }
 
@@ -265,7 +262,6 @@ extension Weighted.Endpoint {
 extension Weighted.Endpoint {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
-        init() {}
     }
 }
 
