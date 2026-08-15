@@ -102,8 +102,12 @@ extension ASCII.Decimal.Machine {
     ) -> Binary.Machine.Parser<T> {
         return Binary.Machine.build { builder -> Binary.Machine.Expression<T> in
             // Parse optional sign: -1 for '-', +1 for '+' or no sign
-            let minusSign = Binary.Machine.byte(0x2D, in: &builder).map({ _ in T(-1) }, in: &builder)  // '-'
-            let plusSign = Binary.Machine.byte(0x2B, in: &builder).map({ _ in T(1) }, in: &builder)  // '+'
+            let minusSign = Binary.Machine.byte(0x2D, in: &builder).map(
+                { _ in T(-1) },
+                in: &builder
+            )  // '-'
+            // '+'
+            let plusSign = Binary.Machine.byte(0x2B, in: &builder).map({ _ in T(1) }, in: &builder)
             let noSign = Binary.Machine.pure(T(1), in: &builder)
 
             let sign = Binary.Machine.oneOf([minusSign, plusSign, noSign], in: &builder)
@@ -143,7 +147,12 @@ extension ASCII.Decimal.Machine {
             )
 
             // Apply sign
-            return Binary.Machine.sequence(sign, magnitude, combine: { s, m in s &* m }, in: &builder)
+            return Binary.Machine.sequence(
+                sign,
+                magnitude,
+                combine: { s, m in s &* m },
+                in: &builder
+            )
         }
     }
 }
