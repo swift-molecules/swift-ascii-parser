@@ -282,7 +282,10 @@ extension `ASCII.Decimal.Float.Parser Tests`.Integration {
         for s in cases {
             let mine = try parse(s)
             let stdlib = Double(s)!
-            #expect(mine == stdlib, "mismatch on \(s): mine=\(mine.bitPattern.hex) stdlib=\(stdlib.bitPattern.hex)")
+            #expect(
+                mine == stdlib,
+                "mismatch on \(s): mine=\(mine.bitPattern.hex) stdlib=\(stdlib.bitPattern.hex)"
+            )
         }
     }
 }

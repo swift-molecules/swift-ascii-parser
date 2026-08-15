@@ -117,7 +117,8 @@ extension `ASCII.Binary.Parser Tests`.`Edge Case` {
     @Test
     func `detects UInt8 overflow`() {
         let parser = ASCII.Binary.Parser<Cursor, UInt8>()
-        var input = Byte.Input.bytes(0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)  // "100000000" == 256
+        // "100000000" == 256
+        var input = Byte.Input.bytes(0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)
 
         #expect(throws: ASCII.Binary.Error.overflow) {
             try parser.parse(&input)
@@ -127,7 +128,8 @@ extension `ASCII.Binary.Parser Tests`.`Edge Case` {
     @Test
     func `boundary value UInt8 max`() throws {
         let parser = ASCII.Binary.Parser<Cursor, UInt8>()
-        var input = Byte.Input.bytes(0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31)  // "11111111" == 255
+        // "11111111" == 255
+        var input = Byte.Input.bytes(0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31)
 
         let result = try parser.parse(&input)
 
@@ -204,7 +206,8 @@ extension `ASCII.Binary.Parser Tests`.`Count Policy` {
     @Test
     func `exactly preserves overflow check`() {
         let parser = ASCII.Binary.Parser<Cursor, UInt8>(count: .exactly(9))
-        var input = Byte.Input.bytes(0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)  // "100000000" == 256
+        // "100000000" == 256
+        var input = Byte.Input.bytes(0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)
 
         #expect(throws: ASCII.Binary.Error.overflow) {
             try parser.parse(&input)
@@ -316,7 +319,8 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
     @Test
     func `Int8 minimum is reachable`() throws {
         let parser = ASCII.Binary.Parser<Cursor, Int8>(sign: .optional)
-        var input = Byte.Input.bytes(0x2D, 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)  // "-10000000" == -128
+        // "-10000000" == -128
+        var input = Byte.Input.bytes(0x2D, 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)
 
         let result = try parser.parse(&input)
 
@@ -327,7 +331,8 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
     @Test
     func `Int8 below minimum overflows`() {
         let parser = ASCII.Binary.Parser<Cursor, Int8>(sign: .optional)
-        var input = Byte.Input.bytes(0x2D, 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x31)  // "-10000001" == -129
+        // "-10000001" == -129
+        var input = Byte.Input.bytes(0x2D, 0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x31)
 
         #expect(throws: ASCII.Binary.Error.overflow) {
             try parser.parse(&input)
@@ -348,7 +353,8 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
     @Test
     func `Int8 above maximum overflows`() {
         let parser = ASCII.Binary.Parser<Cursor, Int8>(sign: .optional)
-        var input = Byte.Input.bytes(0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)  // "10000000" == 128
+        // "10000000" == 128
+        var input = Byte.Input.bytes(0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30)
 
         #expect(throws: ASCII.Binary.Error.overflow) {
             try parser.parse(&input)
