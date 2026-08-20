@@ -1,4 +1,4 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4
 
 import PackageDescription
 
@@ -10,11 +10,11 @@ import PackageDescription
 let package = Package(
     name: "swift-ascii-parser-primitives",
     platforms: [
-        .macOS("27"),
-        .iOS("27"),
-        .tvOS("27"),
-        .watchOS("27"),
-        .visionOS("27"),
+        .macOS(.v27),
+        .iOS(.v27),
+        .tvOS(.v27),
+        .watchOS(.v27),
+        .visionOS(.v27),
     ],
     products: [
         .library(
@@ -51,12 +51,30 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-binary-parser-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-parser-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-ownership-shared-primitives.git", branch: "main"),
+        .package(
+            url: "https://github.com/swift-primitives/swift-ascii-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-binary-parser-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-byte-parser-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-parser-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-ownership-shared-primitives.git",
+            branch: "main"
+        ),
     ],
     targets: [
         // MARK: - Sub-namespace
@@ -67,7 +85,7 @@ let package = Package(
         .target(
             name: "Parseable ASCII Primitives",
             dependencies: [
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
+                .product(name: "ASCII Primitives", package: "swift-ascii-primitives")
             ]
         ),
 
@@ -82,7 +100,10 @@ let package = Package(
                 // Binary.ASCII, W1) compiles to the Binary.Machine IR. The edge
                 // ascii-parser → binary-parser is downward (binary-parser does
                 // not depend on ascii-parser; no [MOD-032] cycle).
-                .product(name: "Binary Machine Primitives", package: "swift-binary-parser-primitives"),
+                .product(
+                    name: "Binary Machine Primitives",
+                    package: "swift-binary-parser-primitives"
+                ),
             ]
         ),
         .target(
@@ -114,10 +135,19 @@ let package = Package(
             dependencies: [
                 "ASCII Decimal Parser Primitives",
                 "Parseable ASCII Primitives",
-                .product(name: "Buffer Linear Primitive", package: "swift-buffer-linear-primitives"),
-                .product(name: "Buffer Linear Primitives", package: "swift-buffer-linear-primitives"),
+                .product(
+                    name: "Buffer Linear Primitive",
+                    package: "swift-buffer-linear-primitives"
+                ),
+                .product(
+                    name: "Buffer Linear Primitives",
+                    package: "swift-buffer-linear-primitives"
+                ),
                 .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives"),
-                .product(name: "Ownership Shared Primitive", package: "swift-ownership-shared-primitives"),
+                .product(
+                    name: "Ownership Shared Primitive",
+                    package: "swift-ownership-shared-primitives"
+                ),
             ]
         ),
 
@@ -169,14 +199,20 @@ let package = Package(
             name: "ASCII Parser Primitives Standard Library Integration Tests",
             dependencies: [
                 "ASCII Parser Primitives Standard Library Integration",
-                .product(name: "Parser Primitives Test Support", package: "swift-parser-primitives"),
+                .product(
+                    name: "Parser Primitives Test Support",
+                    package: "swift-parser-primitives"
+                ),
             ]
         ),
         .testTarget(
             name: "Declarative Parser Syntax Tests",
             dependencies: [
                 "ASCII Decimal Parser Primitives",
-                .product(name: "Parser Primitives Test Support", package: "swift-parser-primitives"),
+                .product(
+                    name: "Parser Primitives Test Support",
+                    package: "swift-parser-primitives"
+                ),
             ],
             // Swift 6.3.2 compiler ICE in opaque-return type-checking of
             // `var body: some Parser_Primitives.Parser.`Protocol`<TypeParam, Output, Error>`
@@ -194,7 +230,10 @@ let package = Package(
             dependencies: [
                 "ASCII Parser Primitives",
                 .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives"),
-                .product(name: "Parser Primitives Test Support", package: "swift-parser-primitives"),
+                .product(
+                    name: "Parser Primitives Test Support",
+                    package: "swift-parser-primitives"
+                ),
             ],
             path: "Tests/Support"
         ),
