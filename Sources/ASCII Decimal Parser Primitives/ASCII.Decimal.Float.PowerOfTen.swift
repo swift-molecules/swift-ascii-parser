@@ -1,33 +1,11 @@
-//
-//  ASCII.Decimal.Float.PowerOfTen.swift
-//  swift-ascii-parser-primitives
-//
-//  Precomputed 128-bit power-of-five approximations for Eisel–Lemire.
-//
-//  Ported verbatim from fast_float `fast_table.h`
-//  (https://github.com/fastfloat/fast_float, Apache 2.0).
-//
-//  10^q = 5^q × 2^q. Powers of two are exact in binary64, so only the
-//  powers of five affect the binary significand. The table covers
-//  q ∈ [-342, +308] (651 entries × 2 UInt64 = 1302 words ≈ 10 KiB):
-//  - 2^64 − 1 numbers can yield a non-zero binary64 down to 10^-342;
-//    anything smaller underflows to zero.
-//  - Any number ≥ 10^309 with mantissa ≥ 1 overflows to infinity.
-//
-
 extension ASCII.Decimal.Float {
-    /// Smallest decimal exponent the table supports.
+
     @usableFromInline
     internal static let smallestPowerOfTen: Int = -342
 
-    /// Largest decimal exponent the table supports.
     @usableFromInline
     internal static let largestPowerOfTen: Int = 308
 
-    /// 128-bit power-of-five approximations indexed by `q − smallestPowerOfTen`.
-    ///
-    /// Each entry is `(high, low)` representing the 128-bit value
-    /// `⌊5^q × 2^k⌋` for an appropriate normalization `k`, rounded toward one.
     @usableFromInline
     internal static let powerOfFive128: [(high: UInt64, low: UInt64)] = [
         (high: 0xeef4_53d6_923b_d65a, low: 0x113f_aa29_06a1_3b3f),

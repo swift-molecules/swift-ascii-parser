@@ -1,47 +1,18 @@
-//
-//  ASCII.Decimal.Machine.swift
-//  swift-ascii-parser-primitives
-//
-//  Machine-based (borrowed-world / zero-copy) ASCII decimal integer parsers.
-//  Relocated from the dissolved `Binary.ASCII.Parsing.Machine.Decimal` (W1):
-//  the borrowed-IR twin of the owned-world `ASCII.Decimal.Parser`.
-//
-
 public import Binary_Machine_Primitives
 
 extension ASCII.Decimal {
-    /// Namespace for `Binary.Machine`-based decimal integer parsing.
-    ///
-    /// These parsers compile to the defunctionalized `Binary.Machine` IR for
-    /// zero-copy, zero-allocation parsing when driven over a borrowed byte
-    /// input. They are the borrowed-world twin of the owned-world
-    /// ``ASCII/Decimal/Parser``.
+
     public enum Machine {}
 }
 
-// MARK: - Unsigned Decimal Parsers
-
 extension ASCII.Decimal.Machine {
-    /// Creates a parser for unsigned decimal integers.
-    ///
-    /// Parses one or more ASCII decimal digits ('0'-'9') and converts to the
-    /// specified unsigned integer type. Uses `fold` for zero-allocation parsing.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let parser = ASCII.Decimal.Machine.unsigned(UInt32.self)
-    /// // Drive `parser` over a borrowed byte input via the Binary.Machine harness.
-    /// ```
-    ///
-    /// - Parameter type: The unsigned integer type to parse into.
-    /// - Returns: A Machine parser for unsigned decimal integers.
+
     @inlinable
     public static func unsigned<T: UnsignedInteger & FixedWidthInteger & Sendable>(
         _ type: T.Type = T.self
     ) -> Binary.Machine.Parser<T> {
         return Binary.Machine.build { builder -> Binary.Machine.Expression<T> in
-            // Parse a single ASCII digit, convert to numeric value
+
             let digit = Binary.Machine.take1(in: &builder).tryMap(
                 { byte throws(Binary.Machine.Fault) -> T in
                     guard byte >= 0x30 && byte <= 0x39 else {
@@ -52,7 +23,6 @@ extension ASCII.Decimal.Machine {
                 in: &builder
             )
 
-            // Fold additional digits, tracking multiplier for final combination
             let moreDigits = Binary.Machine.fold(
                 digit,
                 initial: Fold<T>(multiplier: 1, sum: 0),
@@ -65,7 +35,6 @@ extension ASCII.Decimal.Machine {
                 in: &builder
             )
 
-            // Combine: first digit * multiplier + accumulated sum
             return Binary.Machine.sequence(
                 digit,
                 moreDigits,
@@ -78,41 +47,24 @@ extension ASCII.Decimal.Machine {
     }
 }
 
-// MARK: - Signed Decimal Parsers
-
 extension ASCII.Decimal.Machine {
-    /// Creates a parser for signed decimal integers.
-    ///
-    /// Parses an optional sign ('-' or '+') followed by one or more ASCII
-    /// decimal digits ('0'-'9') and converts to the specified signed integer type.
-    /// Uses `fold` for zero-allocation parsing.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let parser = ASCII.Decimal.Machine.signed(Int32.self)
-    /// // Drive `parser` over a borrowed byte input via the Binary.Machine harness.
-    /// ```
-    ///
-    /// - Parameter type: The signed integer type to parse into.
-    /// - Returns: A Machine parser for signed decimal integers.
+
     @inlinable
     public static func signed<T: SignedInteger & FixedWidthInteger & Sendable>(
         _ type: T.Type = T.self
     ) -> Binary.Machine.Parser<T> {
         return Binary.Machine.build { builder -> Binary.Machine.Expression<T> in
-            // Parse optional sign: -1 for '-', +1 for '+' or no sign
+
             let minusSign = Binary.Machine.byte(0x2D, in: &builder).map(
                 { _ in T(-1) },
                 in: &builder
-            )  // '-'
-            // '+'
+            )
+
             let plusSign = Binary.Machine.byte(0x2B, in: &builder).map({ _ in T(1) }, in: &builder)
             let noSign = Binary.Machine.pure(T(1), in: &builder)
 
             let sign = Binary.Machine.oneOf([minusSign, plusSign, noSign], in: &builder)
 
-            // Parse a single ASCII digit, convert to numeric value
             let digit = Binary.Machine.take1(in: &builder).tryMap(
                 { byte throws(Binary.Machine.Fault) -> T in
                     guard byte >= 0x30 && byte <= 0x39 else {
@@ -123,7 +75,6 @@ extension ASCII.Decimal.Machine {
                 in: &builder
             )
 
-            // Fold additional digits, tracking multiplier for final combination
             let moreDigits = Binary.Machine.fold(
                 digit,
                 initial: Fold<T>(multiplier: 1, sum: 0),
@@ -136,7 +87,6 @@ extension ASCII.Decimal.Machine {
                 in: &builder
             )
 
-            // Combine first digit with accumulated rest
             let magnitude = Binary.Machine.sequence(
                 digit,
                 moreDigits,
@@ -146,7 +96,6 @@ extension ASCII.Decimal.Machine {
                 in: &builder
             )
 
-            // Apply sign
             return Binary.Machine.sequence(
                 sign,
                 magnitude,

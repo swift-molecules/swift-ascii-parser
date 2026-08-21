@@ -1,34 +1,9 @@
-//
-//  Declarative Parser Syntax Tests.swift
-//  swift-ascii-parser-primitives
-//
-//  Reference test suite: canonical `var body` parser pattern.
-//
-//  Convention: `var body` is the default for composed parsers.
-//  `func parse` is reserved for genuine leaf atoms (Body == Never).
-//
-//  Key syntax features demonstrated:
-//  - String literal delimiters: `":"` via Parser.Literal + ExpressibleByStringLiteral
-//  - Type placeholder inference: `ASCII.Decimal.Parser<_, UInt16>()`
-//  - Nest.Name domain types: Network.Endpoint, Geometry.Point
-//  - Void-skipping: literal outputs are automatically discarded
-//  - Tuple flattening: (A, B, C) via parameter packs
-//  - Output mapping: `.map { ... }` converts to domain type
-//  - Error mapping: `.error.map { ... }` converts Either tree
-//
-//  Infrastructure requirement: Parser.Take.Builder needs a concrete
-//  buildExpression for Parser.Literal to enable bare string literal syntax.
-//  Without it, `":" as Parser.Literal<Input>` is needed.
-//
-
 import ASCII_Decimal_Parser_Primitives
 import Input_Primitives
 import Parser_Primitives_Test_Support
 import Testing
 
 private typealias Cursor = Input_Primitives.Input.Slice<Parser.Test.Bytes>
-
-// MARK: - Test Suite
 
 @Suite
 struct `Declarative Parser Syntax Tests` {
@@ -40,12 +15,6 @@ struct `Declarative Parser Syntax Tests` {
     @Suite struct `Range Tests` {}
     @Suite struct `Composition Tests` {}
 }
-
-// ════════════════════════════════════════════════════════════
-// Domain Types — Nest.Name pattern [API-NAME-001]
-// ════════════════════════════════════════════════════════════
-
-// MARK: - Network.Endpoint
 
 struct Network: Sendable {}
 
@@ -63,8 +32,6 @@ extension Network.Endpoint {
         case invalidPort
     }
 }
-
-// MARK: - Geometry.Point
 
 struct Geometry: Sendable {}
 
@@ -85,8 +52,6 @@ extension Geometry.Point {
     }
 }
 
-// MARK: - Measurement.Range
-
 struct Measurement: Sendable {}
 
 extension Measurement {
@@ -103,21 +68,6 @@ extension Measurement.Range {
         case invalidUpper
     }
 }
-
-// ════════════════════════════════════════════════════════════
-// Parsers — var body with string literal delimiters
-// ════════════════════════════════════════════════════════════
-
-// MARK: - Network.Endpoint.Parser
-//
-// Pattern: two values separated by ":"
-//
-//     ASCII.Decimal.Parser  →  UInt16
-//     ":"                   →  Void (skipped)
-//     ASCII.Decimal.Parser  →  UInt16
-//
-// Builder produces (UInt16, UInt16). `.map` converts to domain type.
-// `.error.map` flattens the left-nested Either tree.
 
 extension Network.Endpoint {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
@@ -145,19 +95,6 @@ extension Network.Endpoint.Parser: Parser.`Protocol` {
         }
     }
 }
-
-// MARK: - Geometry.Point.Parser
-//
-// Pattern: three values separated by ","
-//
-//     ASCII.Decimal.Parser  →  UInt16
-//     ","                   →  Void (skipped)
-//     ASCII.Decimal.Parser  →  UInt16
-//     ","                   →  Void (skipped)
-//     ASCII.Decimal.Parser  →  UInt16
-//
-// Builder flattens to (UInt16, UInt16, UInt16) via parameter packs.
-// Five parsers → left-nested Either tree of depth 4.
 
 extension Geometry.Point {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
@@ -199,12 +136,6 @@ extension Geometry.Point.Parser: Parser.`Protocol` {
     }
 }
 
-// MARK: - Measurement.Range.Parser
-//
-// Pattern: two values separated by "-"
-//
-// Same structure as Endpoint but with different delimiter and UInt32.
-
 extension Measurement.Range {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
@@ -231,16 +162,6 @@ extension Measurement.Range.Parser: Parser.`Protocol` {
         }
     }
 }
-
-// MARK: - Nested Composition
-//
-// Pattern: a composed parser using another composed parser
-//
-//     Network.Endpoint.Parser  →  Network.Endpoint
-//     "/"                      →  Void (skipped)
-//     ASCII.Decimal.Parser     →  UInt16 (weight)
-//
-// Demonstrates that declarative parsers compose seamlessly.
 
 struct Weighted: Sendable {}
 
@@ -285,12 +206,6 @@ extension Weighted.Endpoint.Parser: Parser.`Protocol` {
         }
     }
 }
-
-// ════════════════════════════════════════════════════════════
-// Tests
-// ════════════════════════════════════════════════════════════
-
-// MARK: - Network.Endpoint Tests
 
 extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
     @Test
@@ -356,8 +271,6 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
     }
 }
 
-// MARK: - Geometry.Point Tests
-
 extension `Declarative Parser Syntax Tests`.`Point Tests` {
     @Test
     func `parses x,y,z`() throws {
@@ -421,15 +334,12 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
     }
 }
 
-// MARK: - Measurement.Range Tests
-
 extension `Declarative Parser Syntax Tests`.`Range Tests` {
     @Test
     func `parses lower-upper`() throws {
         let parser = Measurement.Range.Parser<Cursor>()
         var input = Cursor(utf8: "100:999")
 
-        // Wrong delimiter — should fail
         #expect(throws: Measurement.Range.Error.expectedDash) {
             try parser.parse(&input)
         }
@@ -476,8 +386,6 @@ extension `Declarative Parser Syntax Tests`.`Range Tests` {
         }
     }
 }
-
-// MARK: - Composition Tests
 
 extension `Declarative Parser Syntax Tests`.`Composition Tests` {
     @Test

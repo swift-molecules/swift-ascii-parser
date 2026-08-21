@@ -2,11 +2,6 @@
 
 import PackageDescription
 
-// ASCII Parser Primitives - Tier 18
-//
-// Subject-first ASCII parsing types: ASCII.Decimal.Parser, ASCII.Hexadecimal.Parser.
-// Bridges ascii-primitives (Tier 0) with parser-primitives (Tier 17).
-
 let package = Package(
     name: "swift-ascii-parser-primitives",
     platforms: [
@@ -77,11 +72,7 @@ let package = Package(
         ),
     ],
     targets: [
-        // MARK: - Sub-namespace
 
-        // Owns `extension ASCII { protocol Parseable }` — the ASCII-substrate
-        // sibling protocol. Extends the upstream `ASCII` namespace, so it has
-        // no zero-dep root of its own (discipline package, [MOD-017]/§7).
         .target(
             name: "Parseable ASCII Primitives",
             dependencies: [
@@ -89,17 +80,12 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Subject Domains
-
         .target(
             name: "ASCII Decimal Parser Primitives",
             dependencies: [
                 .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
                 .product(name: "Parser Primitives", package: "swift-parser-primitives"),
-                // Borrowed-world twin `ASCII.Decimal.Machine` (relocated from
-                // Binary.ASCII, W1) compiles to the Binary.Machine IR. The edge
-                // ascii-parser → binary-parser is downward (binary-parser does
-                // not depend on ascii-parser; no [MOD-032] cycle).
+
                 .product(
                     name: "Binary Machine Primitives",
                     package: "swift-binary-parser-primitives"
@@ -128,8 +114,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Conformances
-
         .target(
             name: "ASCII Parser Primitives Standard Library Integration",
             dependencies: [
@@ -151,8 +135,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Umbrella
-
         .target(
             name: "ASCII Parser Primitives",
             dependencies: [
@@ -164,8 +146,6 @@ let package = Package(
                 "ASCII Parser Primitives Standard Library Integration",
             ]
         ),
-
-        // MARK: - Tests
 
         .testTarget(
             name: "ASCII Decimal Parser Primitives Tests",
@@ -216,7 +196,6 @@ let package = Package(
             ],
         ),
 
-        // MARK: - Test Support
         .target(
             name: "ASCII Parser Primitives Test Support",
             dependencies: [
