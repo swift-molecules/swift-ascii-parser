@@ -3,7 +3,7 @@ import Input_Primitives
 import Parser_Primitives_Test_Support
 import Testing
 
-private typealias Cursor = Input_Primitives.Input.Slice<Parser.Test.Bytes>
+private typealias Cursor = Byte.Input
 
 @Suite
 struct `Declarative Parser Syntax Tests` {
@@ -71,7 +71,7 @@ extension Measurement.Range {
 
 extension Network.Endpoint {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
     }
 }
 
@@ -98,7 +98,7 @@ extension Network.Endpoint.Parser: Parser.`Protocol` {
 
 extension Geometry.Point {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
     }
 }
 
@@ -138,7 +138,7 @@ extension Geometry.Point.Parser: Parser.`Protocol` {
 
 extension Measurement.Range {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
     }
 }
 
@@ -182,7 +182,7 @@ extension Weighted.Endpoint {
 
 extension Weighted.Endpoint {
     struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
     }
 }
 
@@ -227,7 +227,7 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
         let endpoint = try parser.parse(&input)
 
         #expect(endpoint == Network.Endpoint(host: 80, port: 443))
-        #expect(input.first == UInt8(ascii: "/"))
+        #expect(input.first == 0x2F)
     }
 
     @Test
