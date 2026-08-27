@@ -1,4 +1,4 @@
-# swift-ascii-parser-primitives
+# swift-ascii-parser
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
@@ -13,7 +13,7 @@ Parses ASCII byte input into fixed-width integers across decimal, hexadecimal, b
 - **Overflow-safe accumulation** — magnitude accumulates in the sign's direction so `T.min` is reachable, and every step uses reporting-overflow arithmetic that throws rather than wraps.
 - **Floating-point parsing** — `ASCII.Decimal.Float.Parser` decodes decimal float literals to `Double` through a Clinger fast path, an Eisel–Lemire core, and a standard-library slow-path fallback for long mantissas.
 - **Typed throws** — each parser fails with its own error type (`ASCII.Decimal.Error`, `ASCII.Hexadecimal.Error`, `ASCII.Binary.Error`, `ASCII.Octal.Error`, `ASCII.Decimal.Float.Error`) via `throws(Failure)`.
-- **Combinator conformance** — every parser conforms to parser-primitives' `Parser.\`Protocol\``, composing with the wider parser ecosystem.
+- **Combinator conformance** — every parser conforms to parser' `Parser.\`Protocol\``, composing with the wider parser ecosystem.
 - **Standard-library integration** — conforms the ten fixed-width integer types to `ASCII.Parseable` and adds a `FixedWidthInteger.init(ascii:)` convenience.
 - **Span hot path** — `ASCII.Decimal.Float.parse(_:)` accepts a borrowed `Span<Byte>` for callers that already hold contiguous byte storage.
 
@@ -24,8 +24,8 @@ Parses ASCII byte input into fixed-width integers across decimal, hexadecimal, b
 Construct a parser over `Byte.Input` and run it against an ASCII byte cursor. The parser consumes the digit run, advances the input past it, and returns the accumulated value:
 
 ```swift
-import ASCII_Parser_Primitives   // decimal, hexadecimal, binary, octal parsers
-import Byte_Parser_Primitives    // Byte.Input
+import ASCII_Parser   // decimal, hexadecimal, binary, octal parsers
+import Byte_Parser    // Byte.Input
 
 // Greedy decimal parse into a UInt16.
 var input = Byte.Input(utf8: "8080")
@@ -43,7 +43,7 @@ let celsius = try ASCII.Decimal.Parser<Byte.Input, Int8>(sign: .optional).parse(
 The standard-library integration target adds a one-call convenience on the integer types themselves:
 
 ```swift
-import ASCII_Parser_Primitives_Standard_Library_Integration
+import ASCII_Parser_Standard_Library_Integration
 
 let count = try Int(ascii: "42".utf8.map(Byte.init))   // 42
 ```
@@ -54,7 +54,7 @@ let count = try Int(ascii: "42".utf8.map(Byte.init))   // 42
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-primitives/swift-ascii-parser-primitives.git", branch: "main")
+    .package(url: "https://github.com/swift-molecules/swift-ascii-parser.git", branch: "main")
 ]
 ```
 
@@ -62,7 +62,7 @@ dependencies: [
 .target(
     name: "YourTarget",
     dependencies: [
-        .product(name: "ASCII Parser Primitives", package: "swift-ascii-parser-primitives"),
+        .product(name: "ASCII Parser", package: "swift-ascii-parser"),
     ]
 )
 ```
@@ -77,16 +77,16 @@ Eight library products: one per radix, an ASCII-substrate sibling protocol, a st
 
 | Product | Purpose |
 |---------|---------|
-| `Parseable ASCII Primitives` | The `ASCII.Parseable` sibling protocol — the ASCII-substrate peer of the canonical parser-attachment protocol. |
-| `ASCII Decimal Parser Primitives` | `ASCII.Decimal.Parser` for decimal integers and `ASCII.Decimal.Float.Parser` for decimal float literals, with their error types. |
-| `ASCII Hexadecimal Parser Primitives` | `ASCII.Hexadecimal.Parser` for base-16 integers (`0–9`, `A–F`, `a–f`). |
-| `ASCII Binary Parser Primitives` | `ASCII.Binary.Parser` for base-2 integers. |
-| `ASCII Octal Parser Primitives` | `ASCII.Octal.Parser` for base-8 integers. |
-| `ASCII Parser Primitives Standard Library Integration` | `ASCII.Parseable` conformances for the ten fixed-width integer types plus `FixedWidthInteger.init(ascii:)`. |
-| `ASCII Parser Primitives` | Umbrella that re-exports the parsers and the `ASCII.Parser` capability namespace. |
-| `ASCII Parser Primitives Test Support` | Re-exports the main targets for test consumers. |
+| `Parseable ASCII` | The `ASCII.Parseable` sibling protocol — the ASCII-substrate peer of the canonical parser-attachment protocol. |
+| `ASCII Decimal Parser` | `ASCII.Decimal.Parser` for decimal integers and `ASCII.Decimal.Float.Parser` for decimal float literals, with their error types. |
+| `ASCII Hexadecimal Parser` | `ASCII.Hexadecimal.Parser` for base-16 integers (`0–9`, `A–F`, `a–f`). |
+| `ASCII Binary Parser` | `ASCII.Binary.Parser` for base-2 integers. |
+| `ASCII Octal Parser` | `ASCII.Octal.Parser` for base-8 integers. |
+| `ASCII Parser Standard Library Integration` | `ASCII.Parseable` conformances for the ten fixed-width integer types plus `FixedWidthInteger.init(ascii:)`. |
+| `ASCII Parser` | Umbrella that re-exports the parsers and the `ASCII.Parser` capability namespace. |
+| `ASCII Parser Test Support` | Re-exports the main targets for test consumers. |
 
-Import the narrowest product you need — a single radix target for one parser, or the `ASCII Parser Primitives` umbrella for all of them.
+Import the narrowest product you need — a single radix target for one parser, or the `ASCII Parser` umbrella for all of them.
 
 ---
 

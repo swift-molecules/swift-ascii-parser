@@ -2,7 +2,7 @@
 # Triaged by AI-assisted bulk pass (2026-04-29).
 description: "ASCII-to-integer and decimal-float parsing across four radices with Eisel-Lemire float decoding for Swift."
 topics:
-  - primitives
+  - molecules
   - ascii
 homepage: "https://swift-institute.org"
 readme:

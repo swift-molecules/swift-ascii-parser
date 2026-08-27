@@ -1,6 +1,6 @@
-import ASCII_Decimal_Parser_Primitives
-import Input_Primitives
-import Parser_Primitives_Test_Support
+import ASCII_Decimal_Parser
+import Input
+import Parser_Test_Support
 import Testing
 
 private typealias Cursor = Byte.Input
@@ -70,7 +70,7 @@ extension Measurement.Range {
 }
 
 extension Network.Endpoint {
-    struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
+    struct Parser<Input: Collection.Slice.`Protocol` & Input.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == Byte {
     }
 }
@@ -97,7 +97,7 @@ extension Network.Endpoint.Parser: Parser.`Protocol` {
 }
 
 extension Geometry.Point {
-    struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
+    struct Parser<Input: Collection.Slice.`Protocol` & Input.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == Byte {
     }
 }
@@ -137,7 +137,7 @@ extension Geometry.Point.Parser: Parser.`Protocol` {
 }
 
 extension Measurement.Range {
-    struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
+    struct Parser<Input: Collection.Slice.`Protocol` & Input.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == Byte {
     }
 }
@@ -181,7 +181,7 @@ extension Weighted.Endpoint {
 }
 
 extension Weighted.Endpoint {
-    struct Parser<Input: Collection.Slice.`Protocol` & Input_Primitives.Input.Streaming>: Sendable
+    struct Parser<Input: Collection.Slice.`Protocol` & Input.Input.Streaming>: Sendable
     where Input: Sendable, Input.Element == Byte {
     }
 }

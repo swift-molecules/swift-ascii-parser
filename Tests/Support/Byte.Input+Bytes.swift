@@ -1,13 +1,13 @@
-public import Array_Primitives
+public import Array
 public import Buffer_Linear_Primitive
-import Buffer_Linear_Primitives
-public import Byte_Parser_Primitives
-import Byte_Primitives
-import Column_Primitives
-import Input_Primitives
-public import Memory_Heap_Primitives
+import Buffer_Linear
+public import Byte_Parser
+import Byte
+import Column
+import Input
+public import Memory_Heap
 import Ownership_Shared_Primitive
-public import Storage_Contiguous_Primitives
+public import Storage_Contiguous
 
 extension Input.Slice where Base == Array<Byte>.Shared {
 

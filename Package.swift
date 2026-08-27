@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-ascii-parser-primitives",
+    name: "swift-ascii-parser",
     platforms: [
         .macOS(.v27),
         .iOS(.v27),
@@ -13,197 +13,197 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Parseable ASCII Primitives",
-            targets: ["Parseable ASCII Primitives"]
+            name: "Parseable ASCII",
+            targets: ["Parseable ASCII"]
         ),
         .library(
-            name: "ASCII Decimal Parser Primitives",
-            targets: ["ASCII Decimal Parser Primitives"]
+            name: "ASCII Decimal Parser",
+            targets: ["ASCII Decimal Parser"]
         ),
         .library(
-            name: "ASCII Hexadecimal Parser Primitives",
-            targets: ["ASCII Hexadecimal Parser Primitives"]
+            name: "ASCII Hexadecimal Parser",
+            targets: ["ASCII Hexadecimal Parser"]
         ),
         .library(
-            name: "ASCII Binary Parser Primitives",
-            targets: ["ASCII Binary Parser Primitives"]
+            name: "ASCII Binary Parser",
+            targets: ["ASCII Binary Parser"]
         ),
         .library(
-            name: "ASCII Octal Parser Primitives",
-            targets: ["ASCII Octal Parser Primitives"]
+            name: "ASCII Octal Parser",
+            targets: ["ASCII Octal Parser"]
         ),
         .library(
-            name: "ASCII Parser Primitives Standard Library Integration",
-            targets: ["ASCII Parser Primitives Standard Library Integration"]
+            name: "ASCII Parser Standard Library Integration",
+            targets: ["ASCII Parser Standard Library Integration"]
         ),
         .library(
-            name: "ASCII Parser Primitives",
-            targets: ["ASCII Parser Primitives"]
+            name: "ASCII Parser",
+            targets: ["ASCII Parser"]
         ),
         .library(
-            name: "ASCII Parser Primitives Test Support",
-            targets: ["ASCII Parser Primitives Test Support"]
+            name: "ASCII Parser Test Support",
+            targets: ["ASCII Parser Test Support"]
         ),
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-ascii-primitives.git",
+            url: "https://github.com/swift-molecules/swift-ascii.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-binary-parser-primitives.git",
+            url: "https://github.com/swift-molecules/swift-binary-parser.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git",
+            url: "https://github.com/swift-molecules/swift-buffer-linear.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-byte-parser-primitives.git",
+            url: "https://github.com/swift-molecules/swift-byte-parser.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-parser-primitives.git",
+            url: "https://github.com/swift-molecules/swift-parser.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-ownership-shared-primitives.git",
+            url: "https://github.com/swift-molecules/swift-ownership-shared.git",
             branch: "main"
         ),
     ],
     targets: [
 
         .target(
-            name: "Parseable ASCII Primitives",
+            name: "Parseable ASCII",
             dependencies: [
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives")
+                .product(name: "ASCII", package: "swift-ascii")
             ]
         ),
 
         .target(
-            name: "ASCII Decimal Parser Primitives",
+            name: "ASCII Decimal Parser",
             dependencies: [
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
-                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Parser", package: "swift-parser"),
 
                 .product(
-                    name: "Binary Machine Primitives",
-                    package: "swift-binary-parser-primitives"
+                    name: "Binary Machine",
+                    package: "swift-binary-parser"
                 ),
             ]
         ),
         .target(
-            name: "ASCII Hexadecimal Parser Primitives",
+            name: "ASCII Hexadecimal Parser",
             dependencies: [
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
-                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Parser", package: "swift-parser"),
             ]
         ),
         .target(
-            name: "ASCII Binary Parser Primitives",
+            name: "ASCII Binary Parser",
             dependencies: [
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
-                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Parser", package: "swift-parser"),
             ]
         ),
         .target(
-            name: "ASCII Octal Parser Primitives",
+            name: "ASCII Octal Parser",
             dependencies: [
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
-                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Parser", package: "swift-parser"),
             ]
         ),
 
         .target(
-            name: "ASCII Parser Primitives Standard Library Integration",
+            name: "ASCII Parser Standard Library Integration",
             dependencies: [
-                "ASCII Decimal Parser Primitives",
-                "Parseable ASCII Primitives",
+                "ASCII Decimal Parser",
+                "Parseable ASCII",
                 .product(
                     name: "Buffer Linear Primitive",
-                    package: "swift-buffer-linear-primitives"
+                    package: "swift-buffer-linear"
                 ),
                 .product(
-                    name: "Buffer Linear Primitives",
-                    package: "swift-buffer-linear-primitives"
+                    name: "Buffer Linear",
+                    package: "swift-buffer-linear"
                 ),
-                .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives"),
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
                 .product(
                     name: "Ownership Shared Primitive",
-                    package: "swift-ownership-shared-primitives"
+                    package: "swift-ownership-shared"
                 ),
             ]
         ),
 
         .target(
-            name: "ASCII Parser Primitives",
+            name: "ASCII Parser",
             dependencies: [
-                "Parseable ASCII Primitives",
-                "ASCII Decimal Parser Primitives",
-                "ASCII Hexadecimal Parser Primitives",
-                "ASCII Binary Parser Primitives",
-                "ASCII Octal Parser Primitives",
-                "ASCII Parser Primitives Standard Library Integration",
+                "Parseable ASCII",
+                "ASCII Decimal Parser",
+                "ASCII Hexadecimal Parser",
+                "ASCII Binary Parser",
+                "ASCII Octal Parser",
+                "ASCII Parser Standard Library Integration",
             ]
         ),
 
         .testTarget(
-            name: "ASCII Decimal Parser Primitives Tests",
+            name: "ASCII Decimal Parser Tests",
             dependencies: [
-                "ASCII Decimal Parser Primitives",
-                "ASCII Parser Primitives Test Support",
+                "ASCII Decimal Parser",
+                "ASCII Parser Test Support",
             ]
         ),
         .testTarget(
-            name: "ASCII Hexadecimal Parser Primitives Tests",
+            name: "ASCII Hexadecimal Parser Tests",
             dependencies: [
-                "ASCII Hexadecimal Parser Primitives",
-                "ASCII Parser Primitives Test Support",
+                "ASCII Hexadecimal Parser",
+                "ASCII Parser Test Support",
             ]
         ),
         .testTarget(
-            name: "ASCII Binary Parser Primitives Tests",
+            name: "ASCII Binary Parser Tests",
             dependencies: [
-                "ASCII Binary Parser Primitives",
-                "ASCII Parser Primitives Test Support",
+                "ASCII Binary Parser",
+                "ASCII Parser Test Support",
             ]
         ),
         .testTarget(
-            name: "ASCII Octal Parser Primitives Tests",
+            name: "ASCII Octal Parser Tests",
             dependencies: [
-                "ASCII Octal Parser Primitives",
-                "ASCII Parser Primitives Test Support",
+                "ASCII Octal Parser",
+                "ASCII Parser Test Support",
             ]
         ),
         .testTarget(
-            name: "ASCII Parser Primitives Standard Library Integration Tests",
+            name: "ASCII Parser Standard Library Integration Tests",
             dependencies: [
-                "ASCII Parser Primitives Standard Library Integration",
+                "ASCII Parser Standard Library Integration",
                 .product(
-                    name: "Parser Primitives Test Support",
-                    package: "swift-parser-primitives"
+                    name: "Parser Test Support",
+                    package: "swift-parser"
                 ),
             ]
         ),
         .testTarget(
             name: "Declarative Parser Syntax Tests",
             dependencies: [
-                "ASCII Decimal Parser Primitives",
+                "ASCII Decimal Parser",
                 .product(
-                    name: "Parser Primitives Test Support",
-                    package: "swift-parser-primitives"
+                    name: "Parser Test Support",
+                    package: "swift-parser"
                 ),
             ],
         ),
 
         .target(
-            name: "ASCII Parser Primitives Test Support",
+            name: "ASCII Parser Test Support",
             dependencies: [
-                "ASCII Parser Primitives",
-                .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives"),
+                "ASCII Parser",
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
                 .product(
-                    name: "Parser Primitives Test Support",
-                    package: "swift-parser-primitives"
+                    name: "Parser Test Support",
+                    package: "swift-parser"
                 ),
             ],
             path: "Tests/Support"
