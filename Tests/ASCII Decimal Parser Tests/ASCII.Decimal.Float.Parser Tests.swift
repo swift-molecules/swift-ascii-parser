@@ -1,9 +1,9 @@
 import ASCII_Decimal_Parser
-import Input
-import Parser_Test_Support
+import Byte
+import Byte_Parser
 import Testing
 
-private typealias Cursor = Input.Input.Slice<Parser.Test.Bytes>
+private typealias Cursor = Byte.Input
 
 @Suite
 struct `ASCII.Decimal.Float.Parser Tests` {
@@ -14,7 +14,7 @@ struct `ASCII.Decimal.Float.Parser Tests` {
 }
 
 private func bytes(_ s: String) -> Cursor {
-    Cursor(utf8: s)
+    Byte.Input(utf8: s)
 }
 
 private func parse(_ s: String) throws(ASCII.Decimal.Float.Error) -> Double {
@@ -135,7 +135,7 @@ extension `ASCII.Decimal.Float.Parser Tests`.`Edge Case` {
         var input = bytes("3.14abc")
         let v = try parser.parse(&input)
         #expect(v == 3.14)
-        #expect(input.first == 0x61)
+        #expect(input.first == Byte(bitPattern: 0x61))
     }
 
     @Test
@@ -145,7 +145,7 @@ extension `ASCII.Decimal.Float.Parser Tests`.`Edge Case` {
         var input = bytes("1e")
         let v = try parser.parse(&input)
         #expect(v == 1.0)
-        #expect(input.first == 0x65)
+        #expect(input.first == Byte(bitPattern: 0x65))
     }
 
     @Test
@@ -211,7 +211,7 @@ extension `ASCII.Decimal.Float.Parser Tests`.Integration {
         var input = bytes("42.5 next")
         let v = try parser.parse(&input)
         #expect(v == 42.5)
-        #expect(input.first == 0x20)
+        #expect(input.first == Byte(bitPattern: 0x20))
     }
 
     @Test
@@ -220,7 +220,7 @@ extension `ASCII.Decimal.Float.Parser Tests`.Integration {
         var input = bytes("1.5,2.5")
         let v = try parser.parse(&input)
         #expect(v == 1.5)
-        #expect(input.first == 0x2C)
+        #expect(input.first == Byte(bitPattern: 0x2C))
     }
 
     @Test

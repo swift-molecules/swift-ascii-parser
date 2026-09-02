@@ -1,10 +1,14 @@
 public import Byte
-public import Collection
+public import Checkpoint
+public import Cursor
+public import Iterator
+public import Iterator_Protocol
+public import Parser
 
 extension ASCII.Hexadecimal {
 
-    public struct Parser<Input: Collection.Slice.`Protocol`, T: FixedWidthInteger>: Sendable
-    where Input: Sendable, Input.Element == Byte {
+    public struct Parser<Input: Cursor.`Protocol`, T: FixedWidthInteger>
+    where Input.Element == Byte, Input.Failure == Never {
 
         public let sign: ASCII.Digits.Sign
 
@@ -28,6 +32,7 @@ extension ASCII.Hexadecimal.Parser: Parser.`Protocol` {
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> T {
+        let start = input.checkpoint
 
         let limit: Int?
         switch count {
@@ -40,52 +45,73 @@ extension ASCII.Hexadecimal.Parser: Parser.`Protocol` {
 
         var result: T = 0
         var consumed = 0
-        var index = input.startIndex
 
         var negative = false
-        if sign == .optional, index < input.endIndex {
-            let byte = input[index]
-            if byte == 0x2B {
-                input.formIndex(after: &index)
-            } else if byte == 0x2D {
-                guard T.isSigned else { throw .invalidSign }
-                negative = true
-                input.formIndex(after: &index)
+        if sign == .optional {
+            let mark = input.checkpoint
+            if let byte = input.next() {
+                let code = byte.bitPattern
+                if code == 0x2B {
+                } else if code == 0x2D {
+                    guard T.isSigned else {
+                        input.seek(to: start)
+                        throw .invalidSign
+                    }
+                    negative = true
+                } else {
+                    input.seek(to: mark)
+                }
+            } else {
+                input.seek(to: mark)
             }
         }
 
-        while index < input.endIndex {
+        while true {
             if let limit, consumed == limit { break }
-            let byte = input[index]
-            guard let digit = Self._hexValue(byte) else { break }
+            let mark = input.checkpoint
+            guard let byte = input.next() else { break }
+            guard let digit = Self._hexValue(byte) else {
+                input.seek(to: mark)
+                break
+            }
 
             let (shifted, shiftOverflow) = result.multipliedReportingOverflow(by: 16)
-            guard !shiftOverflow else { throw .overflow }
+            guard !shiftOverflow else {
+                input.seek(to: start)
+                throw .overflow
+            }
             let combined =
                 negative
                 ? shifted.subtractingReportingOverflow(digit)
                 : shifted.addingReportingOverflow(digit)
-            guard !combined.overflow else { throw .overflow }
+            guard !combined.overflow else {
+                input.seek(to: start)
+                throw .overflow
+            }
             result = combined.partialValue
-            input.formIndex(after: &index)
             consumed += 1
         }
 
         switch count {
         case .exactly(let n):
-            guard consumed == n else { throw .insufficientDigits }
+            guard consumed == n else {
+                input.seek(to: start)
+                throw .insufficientDigits
+            }
 
         case .greedy, .atMost:
-            guard consumed > 0 else { throw .noDigits }
+            guard consumed > 0 else {
+                input.seek(to: start)
+                throw .noDigits
+            }
         }
 
-        input = input[index...]
         return result
     }
 
     @inlinable
     package static func _hexValue(_ byte: Byte) -> T? {
-        let raw = byte.underlying
+        let raw = byte.bitPattern
         switch raw {
         case 0x30...0x39: return T(raw &- 0x30)
         case 0x41...0x46: return T(raw &- 0x37)

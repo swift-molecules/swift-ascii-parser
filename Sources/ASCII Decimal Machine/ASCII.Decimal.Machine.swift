@@ -1,3 +1,4 @@
+public import ASCII_Decimal_Parser
 public import Binary_Machine
 
 extension ASCII.Decimal {
@@ -15,10 +16,11 @@ extension ASCII.Decimal.Machine {
 
             let digit = Binary.Machine.take1(in: &builder).tryMap(
                 { byte throws(Binary.Machine.Fault) -> T in
-                    guard byte >= 0x30 && byte <= 0x39 else {
+                    let code = byte.bitPattern
+                    guard code >= 0x30 && code <= 0x39 else {
                         throw .predicateFailed(byte: byte)
                     }
-                    return T(byte.underlying - 0x30)
+                    return T(code - 0x30)
                 },
                 in: &builder
             )
@@ -67,10 +69,11 @@ extension ASCII.Decimal.Machine {
 
             let digit = Binary.Machine.take1(in: &builder).tryMap(
                 { byte throws(Binary.Machine.Fault) -> T in
-                    guard byte >= 0x30 && byte <= 0x39 else {
+                    let code = byte.bitPattern
+                    guard code >= 0x30 && code <= 0x39 else {
                         throw .predicateFailed(byte: byte)
                     }
-                    return T(byte.underlying - 0x30)
+                    return T(code - 0x30)
                 },
                 in: &builder
             )

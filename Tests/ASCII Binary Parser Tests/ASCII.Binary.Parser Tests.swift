@@ -1,5 +1,6 @@
 import ASCII_Binary_Parser
 import ASCII_Parser_Test_Support
+import Byte
 import Byte_Parser
 import Testing
 
@@ -45,7 +46,7 @@ extension `ASCII.Binary.Parser Tests`.Unit {
         let result = try parser.parse(&input)
 
         #expect(result == 2)
-        #expect(input.first == 0x32)
+        #expect(input.first == Byte(bitPattern: 0x32))
     }
 
     @Test
@@ -144,7 +145,7 @@ extension `ASCII.Binary.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 11)
-        #expect(input.first == 0x30)
+        #expect(input.first == Byte(bitPattern: 0x30))
     }
 
     @Test
@@ -155,7 +156,7 @@ extension `ASCII.Binary.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 2)
-        #expect(input.first == 0x31)
+        #expect(input.first == Byte(bitPattern: 0x31))
     }
 
     @Test
@@ -207,7 +208,7 @@ extension `ASCII.Binary.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 2)
-        #expect(input.first == 0x31)
+        #expect(input.first == Byte(bitPattern: 0x31))
     }
 
     @Test
@@ -218,7 +219,7 @@ extension `ASCII.Binary.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 1)
-        #expect(input.first == 0x2C)
+        #expect(input.first == Byte(bitPattern: 0x2C))
     }
 
     @Test
@@ -252,7 +253,7 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Binary.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2B)
+        #expect(input.first == Byte(bitPattern: 0x2B))
     }
 
     @Test
@@ -263,7 +264,7 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Binary.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -352,7 +353,7 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Binary.Error.invalidSign) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -374,7 +375,7 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Binary.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -385,7 +386,7 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Binary.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2B)
+        #expect(input.first == Byte(bitPattern: 0x2B))
     }
 
     @Test
@@ -417,6 +418,6 @@ extension `ASCII.Binary.Parser Tests`.`Sign Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == -5)
-        #expect(input.first == 0x31)
+        #expect(input.first == Byte(bitPattern: 0x31))
     }
 }

@@ -1,10 +1,14 @@
 public import Byte
-public import Collection
+public import Checkpoint
+public import Cursor
+public import Iterator
+public import Iterator_Protocol
+public import Parser
 
 extension ASCII.Decimal.Float {
 
-    public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    public struct Parser<Input: Cursor.`Protocol`>
+    where Input.Element == Byte, Input.Failure == Never {
 
         @inlinable
         public init() {}
@@ -21,17 +25,24 @@ extension ASCII.Decimal.Float.Parser: Parser.`Protocol` {
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Double {
-        guard !input.isEmpty else { throw .empty }
+        let start = input.checkpoint
+        var consumed = 0
 
-        var index = input.startIndex
+        let signMark = input.checkpoint
+        guard let firstByte = input.next() else {
+            input.seek(to: signMark)
+            throw .empty
+        }
+
         var negative = false
-
-        let first = input[index]
+        let first = firstByte.bitPattern
         if first == 0x2D {
             negative = true
-            input.formIndex(after: &index)
+            consumed += 1
         } else if first == 0x2B {
-            input.formIndex(after: &index)
+            consumed += 1
+        } else {
+            input.seek(to: signMark)
         }
 
         var mantissa: UInt64 = 0
@@ -41,9 +52,14 @@ extension ASCII.Decimal.Float.Parser: Parser.`Protocol` {
         var tooManyDigits = false
         var sawAnyDigit = false
 
-        while index < input.endIndex {
-            let b = input[index]
-            guard b >= 0x30, b <= 0x39 else { break }
+        while true {
+            let mark = input.checkpoint
+            guard let byte = input.next() else { break }
+            let b = byte.bitPattern
+            guard b >= 0x30, b <= 0x39 else {
+                input.seek(to: mark)
+                break
+            }
             sawAnyDigit = true
             if nSignificantDigits < 19 {
                 mantissa = mantissa &* 10 &+ UInt64(b &- 0x30)
@@ -52,14 +68,20 @@ extension ASCII.Decimal.Float.Parser: Parser.`Protocol` {
                 tooManyDigits = true
             }
             nTotalDigits &+= 1
-            input.formIndex(after: &index)
+            consumed += 1
         }
 
-        if index < input.endIndex, input[index] == 0x2E {
-            input.formIndex(after: &index)
-            while index < input.endIndex {
-                let b = input[index]
-                guard b >= 0x30, b <= 0x39 else { break }
+        let pointMark = input.checkpoint
+        if let byte = input.next(), byte.bitPattern == 0x2E {
+            consumed += 1
+            while true {
+                let mark = input.checkpoint
+                guard let byte = input.next() else { break }
+                let b = byte.bitPattern
+                guard b >= 0x30, b <= 0x39 else {
+                    input.seek(to: mark)
+                    break
+                }
                 sawAnyDigit = true
                 if nSignificantDigits < 19 {
                     mantissa = mantissa &* 10 &+ UInt64(b &- 0x30)
@@ -69,52 +91,71 @@ extension ASCII.Decimal.Float.Parser: Parser.`Protocol` {
                 }
                 nTotalDigits &+= 1
                 nDigitsAfterPoint &+= 1
-                input.formIndex(after: &index)
+                consumed += 1
             }
+        } else {
+            input.seek(to: pointMark)
         }
 
-        guard sawAnyDigit else { throw .missingDigits }
+        guard sawAnyDigit else {
+            input.seek(to: start)
+            throw .missingDigits
+        }
 
         var explicitExp = 0
-        let beforeExp = index
-        if index < input.endIndex {
-            let b = input[index]
-            if b == 0x65 || b == 0x45 {
-                input.formIndex(after: &index)
-                var expNegative = false
-                if index < input.endIndex {
-                    let s = input[index]
-                    if s == 0x2D {
-                        expNegative = true
-                        input.formIndex(after: &index)
-                    } else if s == 0x2B {
-                        input.formIndex(after: &index)
-                    }
-                }
-                var expValue = 0
-                var sawExpDigit = false
-                while index < input.endIndex {
-                    let b = input[index]
-                    guard b >= 0x30, b <= 0x39 else { break }
-                    sawExpDigit = true
+        let beforeExp = input.checkpoint
+        let consumedBeforeExp = consumed
+        if let marker = input.next(),
+            marker.bitPattern == 0x65 || marker.bitPattern == 0x45
+        {
+            consumed += 1
 
-                    if expValue < 100_000 {
-                        expValue = expValue &* 10 &+ Int(b &- 0x30)
-                    }
-                    input.formIndex(after: &index)
-                }
-                if !sawExpDigit {
-
-                    index = beforeExp
+            var expNegative = false
+            let expSignMark = input.checkpoint
+            if let s = input.next() {
+                let code = s.bitPattern
+                if code == 0x2D {
+                    expNegative = true
+                    consumed += 1
+                } else if code == 0x2B {
+                    consumed += 1
                 } else {
-                    explicitExp = expNegative ? -expValue : expValue
+                    input.seek(to: expSignMark)
                 }
+            } else {
+                input.seek(to: expSignMark)
             }
+
+            var expValue = 0
+            var sawExpDigit = false
+            while true {
+                let mark = input.checkpoint
+                guard let byte = input.next() else { break }
+                let b = byte.bitPattern
+                guard b >= 0x30, b <= 0x39 else {
+                    input.seek(to: mark)
+                    break
+                }
+                sawExpDigit = true
+
+                if expValue < 100_000 {
+                    expValue = expValue &* 10 &+ Int(b &- 0x30)
+                }
+                consumed += 1
+            }
+
+            if !sawExpDigit {
+                input.seek(to: beforeExp)
+                consumed = consumedBeforeExp
+            } else {
+                explicitExp = expNegative ? -expValue : expValue
+            }
+        } else {
+            input.seek(to: beforeExp)
         }
 
         let q = explicitExp - nDigitsAfterPoint
 
-        let value: Double
         if !tooManyDigits,
             let fast = ASCII.Decimal.Float.clingerFastPath(
                 negative: negative,
@@ -122,25 +163,25 @@ extension ASCII.Decimal.Float.Parser: Parser.`Protocol` {
                 q: q
             )
         {
-            value = fast
+            return fast
         } else if !tooManyDigits {
-            value = ASCII.Decimal.Float.eiselLemire(
+            return ASCII.Decimal.Float.eiselLemire(
                 negative: negative,
                 mantissa: mantissa,
                 q: q
             )
         } else {
-
-            value = try ASCII.Decimal.Float.slowPath(
-                input: input,
-                start: input.startIndex,
-                end: index
-            )
+            let end = input.checkpoint
+            input.seek(to: start)
+            var bytes: [Byte] = []
+            bytes.reserveCapacity(consumed)
+            while bytes.count < consumed, let byte = input.next() {
+                bytes.append(byte)
+            }
+            input.seek(to: end)
             _ = nTotalDigits
+            return try ASCII.Decimal.Float.slowPath(bytes: bytes)
         }
-
-        input = input[index...]
-        return value
     }
 }
 
@@ -156,7 +197,7 @@ extension ASCII.Decimal.Float {
         let end = span.count
         var negative = false
 
-        let first = span[i]
+        let first = span[i].bitPattern
         if first == 0x2D {
             negative = true
             i &+= 1
@@ -171,11 +212,11 @@ extension ASCII.Decimal.Float {
         var sawAnyDigit = false
 
         while i < end {
-            let b = span[i]
+            let b = span[i].bitPattern
             guard b >= 0x30, b <= 0x39 else { break }
             sawAnyDigit = true
             if nSignificantDigits < 19 {
-                mantissa = mantissa &* 10 &+ UInt64(b.underlying &- 0x30)
+                mantissa = mantissa &* 10 &+ UInt64(b &- 0x30)
                 nSignificantDigits &+= 1
             } else {
                 tooManyDigits = true
@@ -183,14 +224,14 @@ extension ASCII.Decimal.Float {
             i &+= 1
         }
 
-        if i < end, span[i] == 0x2E {
+        if i < end, span[i].bitPattern == 0x2E {
             i &+= 1
             while i < end {
-                let b = span[i]
+                let b = span[i].bitPattern
                 guard b >= 0x30, b <= 0x39 else { break }
                 sawAnyDigit = true
                 if nSignificantDigits < 19 {
-                    mantissa = mantissa &* 10 &+ UInt64(b.underlying &- 0x30)
+                    mantissa = mantissa &* 10 &+ UInt64(b &- 0x30)
                     nSignificantDigits &+= 1
                 } else {
                     tooManyDigits = true
@@ -205,12 +246,12 @@ extension ASCII.Decimal.Float {
         var explicitExp = 0
         let beforeExp = i
         if i < end {
-            let b = span[i]
+            let b = span[i].bitPattern
             if b == 0x65 || b == 0x45 {
                 i &+= 1
                 var expNegative = false
                 if i < end {
-                    let s = span[i]
+                    let s = span[i].bitPattern
                     if s == 0x2D {
                         expNegative = true
                         i &+= 1
@@ -221,11 +262,11 @@ extension ASCII.Decimal.Float {
                 var expValue = 0
                 var sawExpDigit = false
                 while i < end {
-                    let b = span[i]
+                    let b = span[i].bitPattern
                     guard b >= 0x30, b <= 0x39 else { break }
                     sawExpDigit = true
                     if expValue < 100_000 {
-                        expValue = expValue &* 10 &+ Int(b.underlying &- 0x30)
+                        expValue = expValue &* 10 &+ Int(b &- 0x30)
                     }
                     i &+= 1
                 }
@@ -257,7 +298,7 @@ extension ASCII.Decimal.Float {
 
             var bytes: [UInt8] = []
             bytes.reserveCapacity(i)
-            (0..<i).forEach { j in bytes.append(span[j].underlying) }
+            (0..<i).forEach { j in bytes.append(span[j].bitPattern) }
             let str = Swift.String(decoding: bytes, as: Swift.UTF8.self)
             guard let v = Double(str), v.isFinite else { throw .overflow }
             return v

@@ -1,4 +1,4 @@
-import ASCII_Decimal_Parser
+import ASCII_Decimal_Machine
 import Testing
 
 extension ASCII.Decimal.Machine {

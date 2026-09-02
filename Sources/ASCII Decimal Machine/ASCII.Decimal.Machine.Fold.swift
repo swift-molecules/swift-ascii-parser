@@ -1,3 +1,5 @@
+public import ASCII_Decimal_Parser
+
 extension ASCII.Decimal.Machine {
 
     @usableFromInline

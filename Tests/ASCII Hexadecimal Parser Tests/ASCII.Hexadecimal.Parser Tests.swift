@@ -1,5 +1,6 @@
 import ASCII_Hexadecimal_Parser
 import ASCII_Parser_Test_Support
+import Byte
 import Byte_Parser
 import Testing
 
@@ -63,7 +64,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.Unit {
         let result = try parser.parse(&input)
 
         #expect(result == 0xFF)
-        #expect(input.first == 0x3B)
+        #expect(input.first == Byte(bitPattern: 0x3B))
     }
 }
 
@@ -129,7 +130,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 0xFF)
-        #expect(input.first == 0x30)
+        #expect(input.first == Byte(bitPattern: 0x30))
     }
 
     @Test
@@ -180,7 +181,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 0xAB)
-        #expect(input.first == 0x43)
+        #expect(input.first == Byte(bitPattern: 0x43))
     }
 
     @Test
@@ -191,7 +192,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 0xF)
-        #expect(input.first == 0x3B)
+        #expect(input.first == Byte(bitPattern: 0x3B))
     }
 
     @Test
@@ -225,7 +226,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Hexadecimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2B)
+        #expect(input.first == Byte(bitPattern: 0x2B))
     }
 
     @Test
@@ -236,7 +237,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Hexadecimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -301,7 +302,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Hexadecimal.Error.invalidSign) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -323,7 +324,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Hexadecimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -334,7 +335,7 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Hexadecimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2B)
+        #expect(input.first == Byte(bitPattern: 0x2B))
     }
 
     @Test
@@ -345,6 +346,6 @@ extension `ASCII.Hexadecimal.Parser Tests`.`Sign Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == -255)
-        #expect(input.first == 0x30)
+        #expect(input.first == Byte(bitPattern: 0x30))
     }
 }

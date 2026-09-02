@@ -21,6 +21,10 @@ let package = Package(
             targets: ["ASCII Decimal Parser"]
         ),
         .library(
+            name: "ASCII Decimal Machine",
+            targets: ["ASCII Decimal Machine"]
+        ),
+        .library(
             name: "ASCII Hexadecimal Parser",
             targets: ["ASCII Hexadecimal Parser"]
         ),
@@ -47,7 +51,11 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-molecules/swift-ascii.git",
+            url: "https://github.com/swift-molecules/swift-cursor-parser.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-ascii.git",
             branch: "main"
         ),
         .package(
@@ -63,11 +71,35 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-parser.git",
+            url: "https://github.com/swift-atoms/swift-parser.git",
             branch: "main"
         ),
         .package(
             url: "https://github.com/swift-molecules/swift-ownership-shared.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-byte.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-cursor.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-checkpoint.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-iterator.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-pair.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-molecules/swift-pair-parser.git",
             branch: "main"
         ),
     ],
@@ -85,7 +117,19 @@ let package = Package(
             dependencies: [
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Parser", package: "swift-parser"),
-
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Cursor", package: "swift-cursor"),
+                .product(name: "Checkpoint", package: "swift-checkpoint"),
+                .product(name: "Iterator", package: "swift-iterator"),
+                .product(name: "Iterator Protocol", package: "swift-iterator"),
+            ]
+        ),
+        .target(
+            name: "ASCII Decimal Machine",
+            dependencies: [
+                "ASCII Decimal Parser",
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Parser", package: "swift-parser"),
                 .product(
                     name: "Binary Machine",
                     package: "swift-binary-parser"
@@ -97,6 +141,11 @@ let package = Package(
             dependencies: [
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Parser", package: "swift-parser"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Cursor", package: "swift-cursor"),
+                .product(name: "Checkpoint", package: "swift-checkpoint"),
+                .product(name: "Iterator", package: "swift-iterator"),
+                .product(name: "Iterator Protocol", package: "swift-iterator"),
             ]
         ),
         .target(
@@ -104,6 +153,11 @@ let package = Package(
             dependencies: [
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Parser", package: "swift-parser"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Cursor", package: "swift-cursor"),
+                .product(name: "Checkpoint", package: "swift-checkpoint"),
+                .product(name: "Iterator", package: "swift-iterator"),
+                .product(name: "Iterator Protocol", package: "swift-iterator"),
             ]
         ),
         .target(
@@ -111,6 +165,11 @@ let package = Package(
             dependencies: [
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Parser", package: "swift-parser"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Cursor", package: "swift-cursor"),
+                .product(name: "Checkpoint", package: "swift-checkpoint"),
+                .product(name: "Iterator", package: "swift-iterator"),
+                .product(name: "Iterator Protocol", package: "swift-iterator"),
             ]
         ),
 
@@ -152,6 +211,15 @@ let package = Package(
             dependencies: [
                 "ASCII Decimal Parser",
                 "ASCII Parser Test Support",
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
+            ]
+        ),
+        .testTarget(
+            name: "ASCII Decimal Machine Tests",
+            dependencies: [
+                "ASCII Decimal Machine",
+                "ASCII Parser Test Support",
             ]
         ),
         .testTarget(
@@ -159,6 +227,8 @@ let package = Package(
             dependencies: [
                 "ASCII Hexadecimal Parser",
                 "ASCII Parser Test Support",
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
             ]
         ),
         .testTarget(
@@ -166,6 +236,8 @@ let package = Package(
             dependencies: [
                 "ASCII Binary Parser",
                 "ASCII Parser Test Support",
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
             ]
         ),
         .testTarget(
@@ -173,26 +245,28 @@ let package = Package(
             dependencies: [
                 "ASCII Octal Parser",
                 "ASCII Parser Test Support",
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
             ]
         ),
         .testTarget(
             name: "ASCII Parser Standard Library Integration Tests",
             dependencies: [
                 "ASCII Parser Standard Library Integration",
-                .product(
-                    name: "Parser Test Support",
-                    package: "swift-parser"
-                ),
+                .product(name: "Cursor Parser Test Support", package: "swift-cursor-parser"),
             ]
         ),
         .testTarget(
             name: "Declarative Parser Syntax Tests",
             dependencies: [
                 "ASCII Decimal Parser",
-                .product(
-                    name: "Parser Test Support",
-                    package: "swift-parser"
-                ),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Cursor", package: "swift-cursor"),
+                .product(name: "Parser Error", package: "swift-parser"),
+                .product(name: "Parser Map", package: "swift-parser"),
+                .product(name: "Parser Sequence", package: "swift-parser"),
+                .product(name: "Parser Skip", package: "swift-parser"),
             ],
         ),
 
@@ -200,11 +274,8 @@ let package = Package(
             name: "ASCII Parser Test Support",
             dependencies: [
                 "ASCII Parser",
+                .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Byte Parser", package: "swift-byte-parser"),
-                .product(
-                    name: "Parser Test Support",
-                    package: "swift-parser"
-                ),
             ],
             path: "Tests/Support"
         ),

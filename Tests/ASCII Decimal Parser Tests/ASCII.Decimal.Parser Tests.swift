@@ -1,5 +1,6 @@
 import ASCII_Decimal_Parser
 import ASCII_Parser_Test_Support
+import Byte
 import Byte_Parser
 import Testing
 
@@ -45,7 +46,7 @@ extension `ASCII.Decimal.Parser Tests`.Unit {
         let result = try parser.parse(&input)
 
         #expect(result == 42)
-        #expect(input.first == 0x2E)
+        #expect(input.first == Byte(bitPattern: 0x2E))
     }
 
     @Test
@@ -142,7 +143,7 @@ extension `ASCII.Decimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 2026)
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -153,7 +154,7 @@ extension `ASCII.Decimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 12)
-        #expect(input.first == 0x33)
+        #expect(input.first == Byte(bitPattern: 0x33))
     }
 
     @Test
@@ -204,7 +205,7 @@ extension `ASCII.Decimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 12)
-        #expect(input.first == 0x33)
+        #expect(input.first == Byte(bitPattern: 0x33))
     }
 
     @Test
@@ -215,7 +216,7 @@ extension `ASCII.Decimal.Parser Tests`.`Count Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == 7)
-        #expect(input.first == 0x2C)
+        #expect(input.first == Byte(bitPattern: 0x2C))
     }
 
     @Test
@@ -249,7 +250,7 @@ extension `ASCII.Decimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Decimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2B)
+        #expect(input.first == Byte(bitPattern: 0x2B))
     }
 
     @Test
@@ -260,7 +261,7 @@ extension `ASCII.Decimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Decimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -346,7 +347,7 @@ extension `ASCII.Decimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Decimal.Error.invalidSign) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -368,7 +369,7 @@ extension `ASCII.Decimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Decimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2D)
+        #expect(input.first == Byte(bitPattern: 0x2D))
     }
 
     @Test
@@ -379,7 +380,7 @@ extension `ASCII.Decimal.Parser Tests`.`Sign Policy` {
         #expect(throws: ASCII.Decimal.Error.noDigits) {
             try parser.parse(&input)
         }
-        #expect(input.first == 0x2B)
+        #expect(input.first == Byte(bitPattern: 0x2B))
     }
 
     @Test
@@ -411,6 +412,6 @@ extension `ASCII.Decimal.Parser Tests`.`Sign Policy` {
         let result = try parser.parse(&input)
 
         #expect(result == -123)
-        #expect(input.first == 0x34)
+        #expect(input.first == Byte(bitPattern: 0x34))
     }
 }
