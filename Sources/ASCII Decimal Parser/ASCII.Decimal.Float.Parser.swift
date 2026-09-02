@@ -1,7 +1,7 @@
 public import Byte
 public import Checkpoint
 public import Cursor
-public import Iterator
+import Iterator
 public import Iterator_Protocol
 public import Parser
 
