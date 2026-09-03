@@ -21,23 +21,24 @@ Parses ASCII byte input into fixed-width integers across decimal, hexadecimal, b
 
 ## Quick Start
 
-Construct a parser over `Byte.Input` and run it against an ASCII byte cursor. The parser consumes the digit run, advances the input past it, and returns the accumulated value:
+Construct a parser over a byte slice and run it against the slice. A standard-library slice is a cursor: the parser consumes the digit run, advances the slice past it, and returns the accumulated value:
 
 ```swift
-import ASCII_Parser   // decimal, hexadecimal, binary, octal parsers
-import Byte_Parser    // Byte.Input
+import ASCII_Parser                          // decimal, hexadecimal, binary, octal parsers
+import Byte_Standard_Library_Integration     // "8080" as a byte slice
+import Cursor_Standard_Library_Integration   // ArraySlice<Byte> is a cursor
 
 // Greedy decimal parse into a UInt16.
-var input = Byte.Input(utf8: "8080")
-let port = try ASCII.Decimal.Parser<Byte.Input, UInt16>().parse(&input)        // 8080
+var input: ArraySlice<Byte> = "8080"
+let port = try ASCII.Decimal.Parser<ArraySlice<Byte>, UInt16>().parse(&input)        // 8080
 
 // Fixed-width: consume exactly four digits, leaving the rest unconsumed.
-var date = Byte.Input(utf8: "2026-06-30")
-let year = try ASCII.Decimal.Parser<Byte.Input, Int>(count: .exactly(4)).parse(&date)  // 2026
+var date: ArraySlice<Byte> = "2026-06-30"
+let year = try ASCII.Decimal.Parser<ArraySlice<Byte>, Int>(count: .exactly(4)).parse(&date)  // 2026
 
 // Signed: consume an optional leading '+'/'-', reaching Int8.min exactly.
-var temp = Byte.Input(utf8: "-128")
-let celsius = try ASCII.Decimal.Parser<Byte.Input, Int8>(sign: .optional).parse(&temp) // -128
+var temp: ArraySlice<Byte> = "-128"
+let celsius = try ASCII.Decimal.Parser<ArraySlice<Byte>, Int8>(sign: .optional).parse(&temp) // -128
 ```
 
 The standard-library integration target adds a one-call convenience on the integer types themselves:

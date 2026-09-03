@@ -50,6 +50,7 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-atoms/swift-either.git", branch: "main"),
         .package(
             url: "https://github.com/swift-molecules/swift-cursor-parser.git",
             branch: "main"
@@ -64,10 +65,6 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/swift-molecules/swift-buffer-linear.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-byte-parser.git",
             branch: "main"
         ),
         .package(url: "https://github.com/swift-molecules/swift-iterator-parser.git", branch: "main"),
@@ -187,7 +184,9 @@ let package = Package(
                     name: "Buffer Linear",
                     package: "swift-buffer-linear"
                 ),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
                 .product(
                     name: "Ownership Shared Primitive",
                     package: "swift-ownership-shared"
@@ -213,7 +212,9 @@ let package = Package(
                 "ASCII Decimal Parser",
                 "ASCII Parser Test Support",
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
             ]
         ),
         .testTarget(
@@ -229,7 +230,9 @@ let package = Package(
                 "ASCII Hexadecimal Parser",
                 "ASCII Parser Test Support",
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
             ]
         ),
         .testTarget(
@@ -238,7 +241,9 @@ let package = Package(
                 "ASCII Binary Parser",
                 "ASCII Parser Test Support",
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
             ]
         ),
         .testTarget(
@@ -247,7 +252,9 @@ let package = Package(
                 "ASCII Octal Parser",
                 "ASCII Parser Test Support",
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
             ]
         ),
         .testTarget(
@@ -263,7 +270,9 @@ let package = Package(
                 "ASCII Decimal Parser",
                 .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Byte Standard Library Integration", package: "swift-byte"),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
                 .product(name: "Iterator Parser", package: "swift-iterator-parser"),
                 .product(name: "Cursor", package: "swift-cursor"),
                 .product(name: "Parser Error", package: "swift-parser"),
@@ -278,7 +287,9 @@ let package = Package(
             dependencies: [
                 "ASCII Parser",
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
+                .product(name: "Either", package: "swift-either"),
             ],
             path: "Tests/Support"
         ),

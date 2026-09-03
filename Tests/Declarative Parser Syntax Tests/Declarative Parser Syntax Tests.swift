@@ -1,7 +1,8 @@
 import ASCII_Decimal_Parser
 import Byte
-import Byte_Parser
 import Byte_Standard_Library_Integration
+import Cursor_Standard_Library_Integration
+import Either
 import Cursor
 import Iterator_Parser
 import Parser_Error
@@ -215,8 +216,8 @@ extension Weighted.Endpoint.Parser: Parser.`Protocol` {
 extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
     @Test
     func `parses host:port`() throws {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "192:8080")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "192:8080")[...]
 
         let endpoint = try parser.parse(&input)
 
@@ -226,8 +227,8 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
 
     @Test
     func `consumes only its portion`() throws {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "80:443/path")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "80:443/path")[...]
 
         let endpoint = try parser.parse(&input)
 
@@ -237,8 +238,8 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
 
     @Test
     func `reports invalidHost on non-digit`() {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "abc:80")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "abc:80")[...]
 
         #expect(throws: Network.Endpoint.Error.invalidHost) {
             try parser.parse(&input)
@@ -247,8 +248,8 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
 
     @Test
     func `reports expectedColon on missing delimiter`() {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "80 443")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "80 443")[...]
 
         #expect(throws: Network.Endpoint.Error.expectedColon) {
             try parser.parse(&input)
@@ -257,8 +258,8 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
 
     @Test
     func `reports invalidPort after colon`() {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "80:abc")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "80:abc")[...]
 
         #expect(throws: Network.Endpoint.Error.invalidPort) {
             try parser.parse(&input)
@@ -267,8 +268,8 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
 
     @Test
     func `reports invalidHost on empty`() {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "")[...]
 
         #expect(throws: Network.Endpoint.Error.invalidHost) {
             try parser.parse(&input)
@@ -279,8 +280,8 @@ extension `Declarative Parser Syntax Tests`.`Endpoint Tests` {
 extension `Declarative Parser Syntax Tests`.`Point Tests` {
     @Test
     func `parses x,y,z`() throws {
-        let parser = Geometry.Point.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "10,20,30")
+        let parser = Geometry.Point.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "10,20,30")[...]
 
         let point = try parser.parse(&input)
 
@@ -290,8 +291,8 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
 
     @Test
     func `parses max UInt16 values`() throws {
-        let parser = Geometry.Point.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "65535,0,65535")
+        let parser = Geometry.Point.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "65535,0,65535")[...]
 
         let point = try parser.parse(&input)
 
@@ -300,8 +301,8 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
 
     @Test
     func `reports invalidX on empty`() {
-        let parser = Geometry.Point.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "")
+        let parser = Geometry.Point.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "")[...]
 
         #expect(throws: Geometry.Point.Error.invalidX) {
             try parser.parse(&input)
@@ -310,8 +311,8 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
 
     @Test
     func `reports expectedComma after x`() {
-        let parser = Geometry.Point.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "10 20")
+        let parser = Geometry.Point.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "10 20")[...]
 
         #expect(throws: Geometry.Point.Error.expectedComma) {
             try parser.parse(&input)
@@ -320,8 +321,8 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
 
     @Test
     func `reports invalidY after first comma`() {
-        let parser = Geometry.Point.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "10,abc")
+        let parser = Geometry.Point.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "10,abc")[...]
 
         #expect(throws: Geometry.Point.Error.invalidY) {
             try parser.parse(&input)
@@ -330,8 +331,8 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
 
     @Test
     func `reports invalidZ at end`() {
-        let parser = Geometry.Point.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "10,20,abc")
+        let parser = Geometry.Point.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "10,20,abc")[...]
 
         #expect(throws: Geometry.Point.Error.invalidZ) {
             try parser.parse(&input)
@@ -342,8 +343,8 @@ extension `Declarative Parser Syntax Tests`.`Point Tests` {
 extension `Declarative Parser Syntax Tests`.`Range Tests` {
     @Test
     func `parses lower-upper`() throws {
-        let parser = Measurement.Range.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "100:999")
+        let parser = Measurement.Range.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "100:999")[...]
 
         #expect(throws: Measurement.Range.Error.expectedDash) {
             try parser.parse(&input)
@@ -352,8 +353,8 @@ extension `Declarative Parser Syntax Tests`.`Range Tests` {
 
     @Test
     func `parses with dash delimiter`() throws {
-        let parser = Measurement.Range.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "100-999")
+        let parser = Measurement.Range.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "100-999")[...]
 
         let range = try parser.parse(&input)
 
@@ -363,8 +364,8 @@ extension `Declarative Parser Syntax Tests`.`Range Tests` {
 
     @Test
     func `parses UInt32 max`() throws {
-        let parser = Measurement.Range.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "0-4294967295")
+        let parser = Measurement.Range.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "0-4294967295")[...]
 
         let range = try parser.parse(&input)
 
@@ -373,8 +374,8 @@ extension `Declarative Parser Syntax Tests`.`Range Tests` {
 
     @Test
     func `reports invalidLower on non-digit`() {
-        let parser = Measurement.Range.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "abc-999")
+        let parser = Measurement.Range.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "abc-999")[...]
 
         #expect(throws: Measurement.Range.Error.invalidLower) {
             try parser.parse(&input)
@@ -383,8 +384,8 @@ extension `Declarative Parser Syntax Tests`.`Range Tests` {
 
     @Test
     func `reports invalidUpper after dash`() {
-        let parser = Measurement.Range.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "100-abc")
+        let parser = Measurement.Range.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "100-abc")[...]
 
         #expect(throws: Measurement.Range.Error.invalidUpper) {
             try parser.parse(&input)
@@ -395,8 +396,8 @@ extension `Declarative Parser Syntax Tests`.`Range Tests` {
 extension `Declarative Parser Syntax Tests`.`Composition Tests` {
     @Test
     func `nested parser composes`() throws {
-        let parser = Weighted.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "80:443/10")
+        let parser = Weighted.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "80:443/10")[...]
 
         let weighted = try parser.parse(&input)
 
@@ -412,8 +413,8 @@ extension `Declarative Parser Syntax Tests`.`Composition Tests` {
 
     @Test
     func `nested parser propagates inner error`() {
-        let parser = Weighted.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "abc:80/10")
+        let parser = Weighted.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "abc:80/10")[...]
 
         #expect(throws: Weighted.Endpoint.Error.invalidEndpoint) {
             try parser.parse(&input)
@@ -422,8 +423,8 @@ extension `Declarative Parser Syntax Tests`.`Composition Tests` {
 
     @Test
     func `nested parser reports expectedSlash`() {
-        let parser = Weighted.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "80:443 10")
+        let parser = Weighted.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "80:443 10")[...]
 
         #expect(throws: Weighted.Endpoint.Error.expectedSlash) {
             try parser.parse(&input)
@@ -432,8 +433,8 @@ extension `Declarative Parser Syntax Tests`.`Composition Tests` {
 
     @Test
     func `nested parser reports invalidWeight`() {
-        let parser = Weighted.Endpoint.Parser<Byte.Input>()
-        var input = Byte.Input(utf8: "80:443/abc")
+        let parser = Weighted.Endpoint.Parser<ArraySlice<Byte>>()
+        var input = [Byte](utf8: "80:443/abc")[...]
 
         #expect(throws: Weighted.Endpoint.Error.invalidWeight) {
             try parser.parse(&input)
@@ -442,9 +443,9 @@ extension `Declarative Parser Syntax Tests`.`Composition Tests` {
 
     @Test
     func `body delegates to composed parser`() throws {
-        let parser = Network.Endpoint.Parser<Byte.Input>()
-        var input1 = Byte.Input(utf8: "80:443")
-        var input2 = Byte.Input(utf8: "80:443")
+        let parser = Network.Endpoint.Parser<ArraySlice<Byte>>()
+        var input1 = [Byte](utf8: "80:443")[...]
+        var input2 = [Byte](utf8: "80:443")[...]
 
         let fromBody = try parser.body.parse(&input1)
         let fromParse = try parser.parse(&input2)

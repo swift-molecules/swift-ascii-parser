@@ -1,9 +1,10 @@
 import ASCII_Decimal_Parser
 import Byte
-import Byte_Parser
+import Byte_Standard_Library_Integration
+import Cursor_Standard_Library_Integration
 import Testing
 
-private typealias Cursor = Byte.Input
+private typealias Cursor = ArraySlice<Byte>
 
 @Suite
 struct `ASCII.Decimal.Float.Parser Tests` {
@@ -14,7 +15,7 @@ struct `ASCII.Decimal.Float.Parser Tests` {
 }
 
 private func bytes(_ s: String) -> Cursor {
-    Byte.Input(utf8: s)
+    [Byte](utf8: s)[...]
 }
 
 private func parse(_ s: String) throws(ASCII.Decimal.Float.Error) -> Double {
