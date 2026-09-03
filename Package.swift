@@ -70,6 +70,7 @@ let package = Package(
             url: "https://github.com/swift-molecules/swift-byte-parser.git",
             branch: "main"
         ),
+        .package(url: "https://github.com/swift-molecules/swift-iterator-parser.git", branch: "main"),
         .package(
             url: "https://github.com/swift-atoms/swift-parser.git",
             branch: "main"
@@ -261,7 +262,9 @@ let package = Package(
             dependencies: [
                 "ASCII Decimal Parser",
                 .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
                 .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Iterator Parser", package: "swift-iterator-parser"),
                 .product(name: "Cursor", package: "swift-cursor"),
                 .product(name: "Parser Error", package: "swift-parser"),
                 .product(name: "Parser Map", package: "swift-parser"),
